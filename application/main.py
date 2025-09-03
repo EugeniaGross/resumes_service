@@ -31,35 +31,41 @@ if not settings.TESTING:
 
 class AuthorizationMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        access_token = request.headers.get("Authorization")
-        if not access_token or not access_token.startswith("Bearer "):
-            return JSONResponse(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"detail": "Доступ запрещен"},
+        if request.url.path != "/api/v1/resumes/openapi.json":
+            access_token = request.headers.get("Authorization")
+            if not access_token or not access_token.startswith("Bearer "):
+                return JSONResponse(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    content={"detail": "Доступ запрещен"},
+                )
+            try:
+                auth_client = AuthClient()
+                public_key = await auth_client.get_public_key()
+            except RuntimeError as e:
+                logging.error(e)
+                return JSONResponse(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    content={"detail": "Сервис временно не доступен"},
+                )
+            decode_token = JWTTokenService.decode_jwt_token(
+                access_token.replace("Bearer ", ""), public_key
             )
-        try:
-            auth_client = AuthClient()
-            public_key = await auth_client.get_public_key()
-        except RuntimeError as e:
-            logging.error(e)
-            return JSONResponse(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                content={"detail": "Сервис временно не доступен"},
-            )
-        decode_token = JWTTokenService.decode_jwt_token(
-            access_token.replace("Bearer ", ""), public_key
-        )
-        if decode_token is None or decode_token.get("type") != "access":
-            return JSONResponse(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"detail": "Доступ запрещен"},
-            )
-        request.state.user_id = decode_token.get("id")
+            if decode_token is None or decode_token.get("type") != "access":
+                return JSONResponse(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    content={"detail": "Доступ запрещен"},
+                )
+            request.state.user_id = decode_token.get("id")
         response = await call_next(request)
         return response
 
 
-app = FastAPI()
+app = FastAPI(
+    openapi_url="/api/v1/resumes/openapi.json"
+)
+
+if not settings.TESTING:
+    app.add_middleware(AuthorizationMiddleware)
 
 app.add_middleware(
     TrustedHostMiddleware,
@@ -77,9 +83,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-if not settings.TESTING:
-    app.add_middleware(AuthorizationMiddleware)
 
 app.include_router(resumes_router)
 app.include_router(history_improvements_router)

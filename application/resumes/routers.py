@@ -1,10 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
+from base_dependiences import get_current_user
 from resumes.dependiences import resumes_service
 from resumes.services import ResumeService
 from resumes.schemes import ResumeBaseScheme, ResumeResponseScheme, ResumeUpdateScheme
 
-router = APIRouter(prefix="/api/v1/resumes", tags=["Resume"])
+router = APIRouter(
+    prefix="/api/v1/resumes", 
+    tags=["Resume"],
+    dependencies=[Depends(get_current_user)]
+)
 
 
 @router.post(

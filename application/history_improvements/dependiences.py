@@ -5,4 +5,6 @@ from history_improvements.services import ResumeImprovementHistoryService
 
 
 def history_improvement_resume_service():
-    return ResumeImprovementHistoryService(ResumeImprovementHistoryPostgreSQLRepository)
+    return ResumeImprovementHistoryService(
+        ResumeImprovementHistoryPostgreSQLRepository,
+    )

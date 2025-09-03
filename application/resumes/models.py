@@ -31,5 +31,8 @@ class Resume(SQLModel, table=True):
     )
 
     improvements: List["ResumeImprovementHistory"] = Relationship(
-        back_populates="resume"
+        back_populates="resume",
+        sa_relationship_kwargs={
+            "cascade": "all, delete",
+        },
     )

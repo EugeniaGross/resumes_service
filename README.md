@@ -21,23 +21,30 @@ POSTGRES_HOST=db
 TESTING = 1 # указывается при проведении тестирования
 ```
 
-###### Запуск проекта c помошью docker compose: </br>
+###### Запуск сервиса c помошью docker compose: </br>
 ```
 docker compose up --build
 ```
-###### Запуск проекта без docker compose (Windows): </br>
+###### Запуск сервиса без docker compose (Windows): </br>
 ```
 python -m venv .venv
 source .venv/Scripts/activate
 pip install -r requirements.txt
+alembic upgrade head
 cd application
 uvicorn main:app --reload
 ```
-Запуск проекта без docker compose (Linux, MacOS): </br>
+###### Запуск сервиса без docker compose (Linux, MacOS): </br>
 ```
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+alembic upgrade head
 cd application
 uvicorn main:app --reload
 ```
+###### Для запуска всех сервисов и фронтенда вместе: </br>
+Для запуска на одном сервере можно склонировать репозитории в одну папку.
+В эту папку добавить файл docker-compose.yaml c содержанием из файла docker-compose.example.yaml
+Сервис аутентификации: https://github.com/EugeniaGross/auth_service
+Frontend: https://github.com/EugeniaGross/frontend_resumes_project
