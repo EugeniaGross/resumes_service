@@ -58,7 +58,7 @@ class ResumeImprovementHistoryPostgreSQLRepository(
             resume = result.scalar_one_or_none()
             if not resume:
                 return None
-            setattr(resume, "content", improved_content)
+            resume.content = improved_content
             history = ResumeImprovementHistory(
                 resume_id=resume.id, improved_content=improved_content
             )

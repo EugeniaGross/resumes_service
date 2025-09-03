@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import timezone, datetime
 from typing import List
 from zoneinfo import ZoneInfo
 
@@ -60,7 +60,16 @@ class ResumeImprovementHistoryService:
             elem.created_at = self.__update_timezone(elem, time_zone)
         return history
     
-    def __update_timezone(self, history: ResumeImprovementHistory, time_zone: str):
+    def __update_timezone(self, history: ResumeImprovementHistory, time_zone: str) -> datetime:
+        """Изменяет часовой пояс
+
+        Args:
+            history (ResumeImprovementHistory): объект ResumeImprovementHistory
+            time_zone (str): Часовой пояс
+
+        Returns:
+            datetime: Объект datetime c часовым поясом
+        """
         user_tz = ZoneInfo(time_zone)
         history.created_at = history.created_at.replace(tzinfo=timezone.utc)
         return history.created_at.astimezone(user_tz)

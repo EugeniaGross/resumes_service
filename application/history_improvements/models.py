@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 class ResumeImprovementHistory(SQLModel, table=True):
     """
     ORM-модель истории улучшений резюме для хранения в базе данных.
-    Атрибуты:
+    Attrs:
         id (int): Уникальный идентификатор улучшения резюме (Primary Key).
         resume_id (int): Идентификатор резюме.
         improved_content (str): Улучшение.

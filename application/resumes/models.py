@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class Resume(SQLModel, table=True):
     """
     ORM-модель резюме для хранения в базе данных.
-    Атрибуты:
+    Attrs:
         id (int): Уникальный идентификатор резюме (Primary Key).
         user_id (int): Идентификатор пользователя.
         improved_content (str): Улучшение.

@@ -1,4 +1,3 @@
-# repositories/resumes.py
 from abc import ABC, abstractmethod
 from typing import Optional, List
 from sqlalchemy import select
